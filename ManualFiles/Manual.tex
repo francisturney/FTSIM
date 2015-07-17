@@ -1,0 +1,67 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage[margin=.75in]{geometry}  % set the margins to 1in on all sides
+\renewcommand{\theenumi}{\alph{enumi}}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{caption}
+\usepackage[svgnames]{xcolor}
+
+\begin{document}
+
+\title{Manual for the Fluid Threshold Simulation \\
+(FTSIM)}
+\author{Francis Turney\\
+Jasper Kok's Research Group\\
+Department of Atmospheric Science\\
+fturney@ucla.edu}
+\date{6/15/2015}
+
+\maketitle
+
+\section*{Introduction}
+	The purpose of this model is to develop relationships between grain size distribution and the fluid threshold shear velocity of saltation, ${u_{*}}_{ft}$, which is the minimum wind stress needed to initiate saltation from a static bed. The simulation creates a two dimensianal bed of circular grains, with log normally distributed diameters and calculates ${u_{*}}_{ft}$ for the particles most susceptible to entrainment in the flow. The model thus obtain a distribution of fluid thresholds and examines the effects of different particle distributions on the distribution of fluid thresholds.
+
+
+\section*{Running the Main Script}
+	The model is run by executing the \textbf{Main} script from within the Matlab command window. The user is allowed to vary a number of parameters listed under the section titled \textcolor{Green}{\% User inputs}. For example the parameter \textit{mRepetitions} sets the number of times a bed is initiated and statistics are collected on the particles most suseptible to entrainment, i.e. the number of times the model is repeated. The parameter \textit{nParticles} sets the number of particles that are generated for each bed, and thus the total number of particles created is \textit{mRepetitions}$\times$\textit{nParticles}. Other parameters such as mean particle diameter, roughness length, and drag coeficient are set from this section as well.
+	
+	
+	The results of running \textbf{Main} are the generation of a particle bed, the gathering of a statistics on each particle based on the particle's location in the bed, and the presentation of important graphs and illustrations. \textbf{Main} will print a graphical representation of the particle bed, as well as histograms of fluid thresholds and moment arms.
+	
+
+\subsection*{Functions in Main}
+	The \textbf{Main} script calls a number of functions either contained in the FTSIM folder, the pagages +bedGeometry or +dataAnalysis, or the particle class definition \textbf{particle}. These functions usually input and modify an array of objects of type particle called \textit{particleArray}, either by placing particles in bed formation or assigning them physical characteristics based on their placement within the bed.
+\begin{itemize}
+	\item \textbf{initializeBed}
+	
+	Sets particles in the bed one by one, first by droping the particle and then rotating around collided particles untill the rotation reverses.
+	\item \textbf{idTop}
+	
+	Identifies the top layer of particles by dropping dummy particles and noting the particles it collides with as being on top.
+	\item \textbf{idCFM}
+	
+	Identifies Canidates For Movement as those which are on top and not touching particles higher in the bed than they are.
+	\item \textbf{assnPivot}
+	
+	Assigns a pivot point to particles identified as CFM based on a left to right wind. Moment arms are also assigned based on the gravity and drag forces.
+	\item \textbf{assnLift}
+	
+	Assigns a lift point to particles identified as CFM which is the point which the CFM particle is touching its neighbor to the left. This is later used to calculate the area exposed to the wind for CFM particles.
+	\item \textbf{gatherData}
+	
+	Puts the properties of each particle in the \textit{particleArray} into a structure inside a structure array \textit{P} for easier viewing of grain properties in a table.
+	\item \textbf{Print}
+	
+	Creates a graphical representation of the particle bed with the top row of particles in blue and CFMs having pivot points indicated by circles and moment arms indicated by black lines.
+	
+	\item \textbf{solveUft}
+	
+	Solves the moment balance between lift and drag foces (Bagnold 1940),
+	\begin{equation}
+	{u_{*}}_{ft} = \left[ \frac{r_g}{r_d}\frac{\pi (\rho_p - \rho_a)}{12 \rho_a}\frac{g{D_p}^3 \kappa^2}{C_d} \left[\int\limits_{z_{bot}}^{z_{top}} {\text{ln}}^2 \left(\frac{z}{z_0}\right) \sqrt{r^2 - {(z_c-z)}^2} dz\right]^{-1}\right]^{\frac{1}{2}}.
+    \end{equation}
+    Integrates the windspeed over the surface area exposed to calculate the drag force, which is plugged into the moment balance to solve for ${u_*}_{ft}$. Note that the limits of integration are different depending on wheather the particle's lift point is above the average height of the top row of particles. If it's not then the equation is integrated up from the average height ($u = 0$, ~$z0$).
+	 
+\end{itemize}
+\end{document}
