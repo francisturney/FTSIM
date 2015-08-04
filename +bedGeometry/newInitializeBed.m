@@ -9,16 +9,19 @@ function newInitializeBed(particleArray)
     global nDummies;                           % Number of dummy particles for making periodic boundary conditions
     global terminate;                          % Terminates placement of particle
     global nParticles;                         % Number of particles in bed
+    global range;                              % Range of placement of particles
     nDummies = 0;                              % Start off with no dummies
     P = particleArray;                         % Simplify notation
   
     for i=1:nParticles
+        if mod(i,10) == 0;
+            fprintf('On particle %i\n',i);
+        end  
         if i > 1    
-            
             % Periodic Boundary Conditions 
             nDummies = nDummies + 1;                            % Create dummies,
             P(nParticles + nDummies).r = P(i-1).r;              % that are mirrors of the previous run's particle,
-            P(nParticles + nDummies).x = P(i-1).x + 100;        % but 100 above it in x
+            P(nParticles + nDummies).x = P(i-1).x + range;        % but 100 above it in x
             P(nParticles + nDummies).z = P(i-1).z;
             P(nParticles + nDummies).center = [P(nParticles + nDummies).x, P(nParticles + nDummies).z];
             %fprintf('dummy1\n')
@@ -27,24 +30,24 @@ function newInitializeBed(particleArray)
             
             nDummies = nDummies + 1;                            % Create dummies,
             P(nParticles + nDummies).r = P(i-1).r;              % that are mirrors of the previous run's particle,
-            P(nParticles + nDummies).x = P(i-1).x - 100;        % but are 100 below it in x
+            P(nParticles + nDummies).x = P(i-1).x - range;        % but are 100 below it in x
             P(nParticles + nDummies).z = P(i-1).z;
             P(nParticles + nDummies).center = [P(nParticles + nDummies).x, P(nParticles + nDummies).z];
             %fprintf('dummy2\n')
             % viscircles(P(nParticles + nDummies).center,P(nParticles + nDummies).r,'EdgeColor','b');   % debug
             % pause;
-        end 
-        fprintf('On particle %i\n',i)    
-        if mod(i,5) == 0
-           clf
-           for j=1:(i-1)
-               % viscircles(P(j).center,P(j).r,'EdgeColor','b');   % debug
-           end
-           for j = 51:(nParticles + nDummies)
-              % viscircles(P(j).center,P(j).r,'EdgeColor','b');   % debug
-           end
-           % pause;
-        end
+         end 
+%         fprintf('On particle %i\n',i)    
+%         if mod(i,5) == 0
+%            clf
+%            for j=1:(i-1)
+%                % viscircles(P(j).center,P(j).r,'EdgeColor','b');   % debug
+%            end
+%            for j = 51:(nParticles + nDummies)
+%               % viscircles(P(j).center,P(j).r,'EdgeColor','b');   % debug
+%            end
+%            % pause;
+%         end
         % Drop
         inLine = 0;                             % Particles in the way of P(i)
         k = 0;                                  % Number of particle in the way of P(i)
@@ -93,13 +96,13 @@ function newInitializeBed(particleArray)
             if P(i).LR == -1;
                 for j=(nParticles + nDummies):-1:1
                     if (j >= i) && (j <= nParticles)
-                         Dist(j) = 200;
+                         Dist(j) = 2000;
                          continue
                     end
                     if P(j).x < P(P(i).touching).x 
                         Dist(j) = pdist([P(i).center; P(j).center],'euclidean');
                     else
-                        Dist(j) = 200;
+                        Dist(j) = 2000;
                     end
                     [Min,iLand] = min(Dist);
                     P(i).landing = iLand;
@@ -107,20 +110,20 @@ function newInitializeBed(particleArray)
             else if P(i).LR == 1;
                     for j=(nParticles + nDummies):-1:1
                         if (j >= i) && (j <= nParticles)
-                            Dist(j) = 200;
+                            Dist(j) = 2000;
                             continue
                         end
                         if P(j).x > P(P(i).touching).x 
                             Dist(j) = pdist([P(i).center; P(j).center],'euclidean');
                         else
-                            Dist(j) = 200;
+                            Dist(j) = 2000;
                         end
                         [Min,iLand] = min(Dist);
                         P(i).landing = iLand;
                     end    
                 end
             end
-            if Min == 200;
+            if Min == 2000;
                     floorSet(P,i);
                     % viscircles(P(i).center,P(i).r, 'EdgeColor', 'b')   % debug
                     % pause;
@@ -128,10 +131,10 @@ function newInitializeBed(particleArray)
                     break
             end
             while ~place(P,i) 
-                Dist(iLand) = 200; % Distance to iLand is much farther     
+                Dist(iLand) = 2000; % Distance to iLand is much farther     
                 [Min,iLand] = min(Dist);
                 P(i).landing = iLand;
-                if Min == 200;
+                if Min == 2000;
                     floorSet(P,i);
                     % viscircles(P(i).center,P(i).r, 'EdgeColor', 'b')   % debug
                     % pause;
@@ -153,21 +156,31 @@ function newInitializeBed(particleArray)
 %                 fprintf('P(i).landing = %f P(iLand).x = %f\n',P(i).landing,P(P(i).landing).x)
 %                 fprintf('isTouching2(P,i) = ')
 %                 isTouching2(P,i)
-                if P(i).touching == oldTouch
-                    l = l + 1;
-                end
-                %t = t + 1; % instability counter
-                %if t > 20
-                if l > 5
-                    k = 0;
-                end
+                if P(i).touching == oldTouch; l = (l + 1) ; end
+                t = (t + 1);                                        % instability counter
+                if t > 100; destroy(P(i)); terminate = true; break; end
+                if l > 5; k = 0; end
                 oldTouch = P(i).touching;
                 % pause;
             end
             % viscircles(P(i).center,P(i).r, 'EdgeColor', 'r');   % debug
             % pause;
-            
-        end
-
+            if terminate == true; break; end;
+        end  
     end
+    % Periodic Boundary Conditions 
+            nDummies = nDummies + 1;                            % Create dummies,
+            P(nParticles + nDummies).r = P(i).r;              % that are mirrors of the previous run's particle,
+            P(nParticles + nDummies).x = P(i).x + range;        % but 100 above it in x
+            P(nParticles + nDummies).z = P(i).z;
+            P(nParticles + nDummies).center = [P(nParticles + nDummies).x, P(nParticles + nDummies).z];
+            %fprintf('dummy1\n')
+            % viscircles(P(nParticles + nDummies).center,P(nParticles + nDummies).r,'EdgeColor','b');   % debug
+            % pause;
+            
+            nDummies = nDummies + 1;                            % Create dummies,
+            P(nParticles + nDummies).r = P(i).r;              % that are mirrors of the previous run's particle,
+            P(nParticles + nDummies).x = P(i).x - range;        % but are 100 below it in x
+            P(nParticles + nDummies).z = P(i).z;
+            P(nParticles + nDummies).center = [P(nParticles + nDummies).x, P(nParticles + nDummies).z];
 end

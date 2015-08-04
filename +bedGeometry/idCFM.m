@@ -4,8 +4,11 @@
 function idCFM(particleArray,ave)  
     global nParticles
     global nDummies
+    global aveCFM
+    aveCFM = 0;
     import bedGeometry.*        % Package of functions controlling bed Geometry
     P = particleArray;          % Simplify notation
+    l = 0;
 
     for i=1:nParticles + nDummies                                               %reset top
         if P(i).isTop == true;
@@ -25,7 +28,12 @@ function idCFM(particleArray,ave)
                    P(i).isCFM = false;
                 end
             end
+            if P(i).isCFM == true
+                aveCFM = aveCFM + P(i).z + P(i).r;
+                l = l + 1;
+            end     
         end
     end
+    aveCFM = aveCFM/l;
 end
     

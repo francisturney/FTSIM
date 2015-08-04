@@ -5,6 +5,7 @@
 function idTop(particleArray)
     global nParticles
     global nDummies
+    global lBound range
     P = particleArray;
     import bedGeometry.*                                                 % Package of functions controlling bed Geometry
     
@@ -35,12 +36,12 @@ function idTop(particleArray)
                 end
             end
         end
-        if nAbove < 3 && (P(i).x > 130) && (P(i).x < 230) && (per < 0.90) 
+        if nAbove < 3 && (P(i).x > lBound) && (P(i).x < (lBound + range)) && (per < 0.98) 
             P(i).isTop = true;
         end
     end
    return
-    for i=135:2:225
+    for i=(lBound + 5):2:(lBound + range - 5)
         top = false;                                                 
         for z = 55:-2:0 
             for j=1:nParticles + nDummies

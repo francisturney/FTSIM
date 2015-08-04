@@ -1,7 +1,7 @@
 % Class: particle
 % Description: particles represent sand grains and are essentially 2D circles which hold 
 % properties about their physics and points of contact with neighbors
-classdef particle < handle
+classdef particle < handle 
     properties
         % Particle Geometry and Forces
         r                       % Radius of assumed circular particle
@@ -24,21 +24,39 @@ classdef particle < handle
         liftPoint  = [0,0]      % Point opposite from the pivot point that the particle lifts off
         dummyIndex = 0;         % Index of created dummy particle which mirrors the ith particle 
         dummyFriend = 0;        % Index of the particle that created the dummy particle
+        ave = 0;                % Average height of the bed P(i) is sitting in
+        wake = 0;               % Index of particle that is makeing wake
+        ld = 0;                 % Length of ith Particle to wake particle
+        hp = 0;                 % height of top of wake particle above the bed
+        I = [];                 % Integral of wind speed and area
+        aveCFM = 0;                 % Saves the average top height of the CFM's
        
     end
     methods
         % Constructor
         function particle = particle(radius, stdDeviation)                 % Constructor
+            global lBound range
+%             range = 100;
+%             lBound = 130;
+ 
             if  nargin == 0
                 m=4; % Mean for lognormal distribution 
-                s=1; % Standard deviation for normal lognormal distribution
+                s=2; % Standard deviation for normal lognormal distribution
                 mu = log(m^2/sqrt(s+m^2));
                 sigma = sqrt(log(1+s/m^2));
                 particle.r = lognrnd(mu,sigma);                                                %  Particle radius  
-                particle.x = (130 + particle.r) + (100 - particle.r).*rand(1);                          % x coordinate of center                                         
+                particle.x = (lBound + particle.r) + (range - particle.r).*rand(1);                          % x coordinate of center                                         
                 particle.z = 200;                                           % z coordinate of center
                 particle.center = [particle.x,particle.z];   
             end
+        end
+        function delete(particle)
+        end
+        function destroy(particle)
+            particle.r = 0;
+            particle.x = 0;
+            particle.z = 0;
+            particle.center = [0,0];
         end
         
         function [] = change(particleArray)

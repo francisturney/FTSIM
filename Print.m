@@ -1,54 +1,55 @@
 function Print(P,ave)
     global nParticles
     global nDummies
+    global range lBound
     
     clf
     figure(1)
-    ax = axes; hold on;
+    %ax = axes; hold on;
     N = nParticles + nDummies;
     % Draw Particles in Red
+    c = 1/10; % Conversion to mm
     for i=1:N                                                       %Print to screen
-        viscircles(P(i).center,P(i).r,'EdgeColor','k');
-    end
-    % Draw Top Row of Particles in Blue
-    for i=1:N                                                              
-        if P(i).isTop == true
-            viscircles(P(i).center,P(i).r,'EdgeColor','b'); 
+        viscircles(c*P(i).center,c*P(i).r,'EdgeColor','k');
+        
+        % Draw Top Row of Particles in Blue
+        if P(i).isTop == true 
+            viscircles(c*P(i).center,c*P(i).r,'EdgeColor','b'); 
         end
-    end
-    % Draw Pivot Points in Blue
-    hold on
-    for i=1:N
+        % Draw Pivot Points in Blue
+        hold on
         if P(i).isCFM
-            plot(P(i).pivotPoint(1),P(i).pivotPoint(2),'k.', 'MarkerSize',20);
-        end
-    end
-    for i=1:N                                                              %draw lines indicating lever arms 
-        if P(i).isCFM;
+            % Draw point
+            plot(c*P(i).pivotPoint(1),c*P(i).pivotPoint(2),'k.', 'MarkerSize',20);
+            
+            % Draw lever arms
             if (P(i).pivotPoint ~= 0)
-                lineX = [P(i).x; P(i).pivotPoint(1)];
-                lineY = [P(i).z; P(i).pivotPoint(2)];
+                lineX = [c*P(i).x; c*P(i).pivotPoint(1)];
+                lineY = [c*P(i).z; c*P(i).pivotPoint(2)];
                 line(lineX,lineY,'Color','k');
             end
+        % Draw Anti Pivot Points in Blue
+            viscircles(c*P(i).liftPoint,c*0.5, 'EdgeColor', 'b');          %Removed
+        end
+    end
+    for i=1:N
+        if P(i).isCFM
+           if P(i).wake ~= 0
+                viscircles(c*P(P(i).wake).center,c*P(P(i).wake).r,'EdgeColor', 'r');
+           end
         end
     end
     % Draw Average Height in Dashed Black Line
-    x = linspace(30,330,100);
-    z = linspace(ave,ave,100);
+    x = linspace(c*30,c*(lBound + 2*range),100);
+    z = linspace(c*ave,c*ave,100);
     plot(x,z,'--k','LineWidth', 1);
     
-    % Draw Anti Pivot Points in Blue
-    for i=1:N
-        if P(i).isCFM
-            viscircles(P(i).liftPoint,0.5, 'EdgeColor', 'b');          %Removed
-        end
-     end
 title('Modeled Particle Bed for Mean Diameter 0.8mm', 'FontSize', 20, 'FontName', 'Times')
 %axes('FontSize', 14, 'FontName', 'Times');
 xlabel('distance(mm)','FontSize',20,...
        'FontName','Times');
 ylabel('height(mm)','FontSize',20,...
        'FontName','Times');
-    axis([30 330 0 60])
+    axis([20 35 3 15])
     axis equal
 end
