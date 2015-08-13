@@ -16,7 +16,7 @@ global lBound range aveCFM
     nParticles = 175;            % Number of particles per bed formation
     lBound = 200;                % Lower bound
     range = 150;                 % Range of placement
-    mRepetitions = 200;            % Number of model runs, i.e. number of times a bed is created and data colected on it, 300 represents 1000 CFM (100 particles) 
+    mRepetitions = 1;            % Number of model runs, i.e. number of times a bed is created and data colected on it, 300 represents 1000 CFM (100 particles) 
     meanParticleRadius = 0.05;   % Average Radius of Particle (mm)
     stdDeviation = 0.01;         % Deviation of the radius from its mean (lognormally distributed)
     Cd = 1;                      % Drag Coeficient
@@ -43,8 +43,8 @@ for i=1:(mRepetitions)
 %  particleArray(2).x = 135;
 %  particleArray(3).x = 134;
     fprintf('On model run number %f\n',i);
-    try      
-        newInitializeBed(particleArray)                  % Place Particles in Bed      
+    %try      
+        initializeBed(particleArray)       % Place Particles in Bed      
 
         idTop(particleArray);                 % Identify Top Row of Particles
 
@@ -63,7 +63,7 @@ for i=1:(mRepetitions)
 
         P = gatherData(particleArray);       % Make Structure Array to easily view properties
         
-        %Print(particleArray, ave);           % Print Particle Bed
+        Print(particleArray, ave);           % Print Particle Bed
 
         % Assimilate particle array into total particle/structure Array for data collection     
             if i==1
@@ -73,10 +73,10 @@ for i=1:(mRepetitions)
                 totalParticleArray = [totalParticleArray,particleArray];
                 Ptot = [Ptot, P];
             end
-    catch
-        disp('Error')
-        continue
-    end
+%     catch
+%         disp('Error')
+%         continue
+%     end
 end
 toc
 elapsedTime = toc/60;                                           %give run time in seconds and minutes

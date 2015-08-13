@@ -41,7 +41,7 @@ classdef particle < handle
  
             if  nargin == 0
                 m=4; % Mean for lognormal distribution 
-                s=2; % Standard deviation for normal lognormal distribution
+                s=3; % Standard deviation for normal lognormal distribution
                 mu = log(m^2/sqrt(s+m^2));
                 sigma = sqrt(log(1+s/m^2));
                 particle.r = lognrnd(mu,sigma);                                                %  Particle radius  

@@ -15,4 +15,9 @@ function averageHeight = averageHeight(particleArray)
         end
     end
     averageHeight = averageHeight/n;
+    for i=1:nParticles + nDummies
+        if particleArray(i).isTop
+            particleArray(i).ave = averageHeight;
+        end
+    end
 end

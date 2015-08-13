@@ -24,7 +24,6 @@ function solveUft(particleArray,Cd,k,mu,rhoAir,rhoSand,g,z0,ave)
             zCenter = P(i).z - ave;                         % z coordinate of the center of the particle with the average height as z = 0 
             zLift = P(i).liftPoint(2) - ave;                % z coordinate of the lift point with the average height as z = 0
             zTop = (zCenter + P(i).r);                      % z coordinate of the top of the ith particle
-            P(i).ave = ave;
             rG = P(i).gravityMomentArm;                     % Simplify Notation
             rD = P(i).dragMomentArm;                        % Simplify Notation
             s = 1;                                          % Scale factor for differently sized grains

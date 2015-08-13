@@ -10,15 +10,18 @@ N = length(Ptot);             % Size of Pto\
 % end    
 mG=[];
 mD=[];
-nCFM1=0;
-nCFM2=0;
-nCFM3=0;
-nCFM4=0;
-uft=0;
+nCFM1=0; nCFM2=0; nCFM3=0; nCFM4=0;
+uft=0; uft1=0; uft2=0; uft3=0; uft4=0;
 radii = [];
-radiusTot = [];
+radiusTot = [];heightDist = [];
+% hN = 0;
+% heightAbove
 for i=1:N
     radiusTot(i) = Ptot(i).r;  
+%     if P(i).top == true;
+%         hN = hN + 1;
+%         heightAbove(hN) = 
+%         
     if Ptot(i).CFM          
 %         if ~isreal(Ptot(i).uft) || (Ptot(i).uft(1) > 4) || (Ptot(i).uft(2) > 4) || (Ptot(i).uft(3) > 4) || (Ptot(i).uft(4) > 4)                           %Elimintae outliers
 %             continue
@@ -45,35 +48,40 @@ for i=1:N
         %radii(nCFM) = Ptot(i).r; 
     end
 end
-figure
-subplot(2,2,1)
+h = figure;
+subplot(2,2,1);
 hist(uft1,50)
-title('u_{*_{ft}} for D_{m} = (0.8mm) logrithmic')
+title('Logrithmic')
 xlabel('Fluid Threshold Shear Velocity (m/s)')
 ylabel('Frequency out of 881')
-axis([0 2 0 175])
+axis([0 2 0 300])
 
 subplot(2,2,2)
 hist(uft2,50)
-title('u_{*_{ft}} for D_{m} = (0.8mm) linear')
+title('Linear')
 xlabel('Fluid Threshold Shear Velocity (m/s)')
 ylabel('Frequency out of aproximatly 1000')
 axis([0 2 0 175])
 
 subplot(2,2,3)
 hist(uft3,50)
-title('u_{*_{ft}} for D_{m} = (0.8mm) log-modified')
+title('Log-modified')
 xlabel('Fluid Threshold Shear Velocity (m/s)')
 ylabel('Frequency out of aproximatly 1000')
-axis([0 2 0 175])
+axis([0 2 0 150])
 
 subplot(2,2,4)
 hist(uft4,50)
-title('u_{*_{ft}} for D_{m} = (0.8mm) linear-modified')
+title('Linear-modified')
 xlabel('Fluid Threshold Shear Velocity (m/s)')
 ylabel('Frequency out of aproximatly 1000')
-axis([0 2 0 200])
+axis([0 2 0 100])
 
+annotation('textbox', [0 0.9 1 0.1], ...
+    'String', 'u_{*_{ft}} for D_{m} = (0.8mm) and sdv = 0.6', ...
+    'EdgeColor', 'none', ...
+    'FontSize',15, ...
+    'HorizontalAlignment', 'center')
 %min(uft)
 % edges = logspace(-1,0,101);
 % centerBins = geomean([edges(1:end-1);edges(2:end)])
