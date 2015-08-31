@@ -11,7 +11,7 @@
 % ave                          Average height of top layer of particles
 % Numerical Integration is done using Using Global Adaptive Quadrature and Default Error Tolerances
 
-function solveUft(particleArray,Cd,k,mu,rhoAir,rhoSand,g,z0,ave)
+function solveUft(particleArray,Cd,k,mu,rhoAir,rhoSand,g,z0,ave,Beta)
         global nParticles
         global nDummies
         global aveCFM
@@ -26,8 +26,11 @@ function solveUft(particleArray,Cd,k,mu,rhoAir,rhoSand,g,z0,ave)
             zTop = (zCenter + P(i).r);                      % z coordinate of the top of the ith particle
             rG = P(i).gravityMomentArm;                     % Simplify Notation
             rD = P(i).dragMomentArm;                        % Simplify Notation
+            rC = P(i).cohesiveMomentArm;                    % Simplify notation
             s = 1;                                          % Scale factor for differently sized grains
-            c = s*10000;                                    % (conversion coeficient between hundreds of microns, the assumed model scale (particle radius untis), and meters)
+            c = s*10000;                                    % (conversion coeficient between hundreds of microns, the assumed model scale (particle radius untis), and meters)                    
+            Dp = P(i).r*2/c;                                % Simplify notation
+            Dc = P(P(i).lift).r*2/c;
             
             
             % Drag force integration
@@ -38,9 +41,13 @@ function solveUft(particleArray,Cd,k,mu,rhoAir,rhoSand,g,z0,ave)
                 else                                                                % If the lift point is below the average height of the top row 
                     I = integral(f, z0, zTop);                                       % numerical integrate from z0 (u = 0), to the top of particle 
                 end
-                % Solve for threshold shear velocity by substituting of values into equation (8) 
-                P(i).uft = sqrt((pi*(rhoSand - rhoAir)*g*((P(i).r*2/c)^3)*(k^2)*rG)/(12*rhoAir*rD*Cd*(I/(c^2))));
-                P(i).I(1) = I; % Save integral
+                
+                % Solve for threshold shear velocity by substituting of values into equation (8)
+                P(i).uft = sqrt((pi*(rhoSand - rhoAir)*g*((Dp)^3)*rG/6 + ...
+                    Beta*((Dp*Dc*rC)/(2*(Dp + Dc))))/(((2*rhoAir*rD*Cd)/(k^2))*(I/(c^2))));
+                
+%                 P(i).uft = sqrt((pi*(rhoSand - rhoAir)*g*((Dp)^3)*rG/6)/(((2*rhoAir*rD*Cd)/(k^2))*(I/(c^2))));      
+%                 P(i).I(1) = I;          % Save integral
                 
             % Linear Wind Profile
                 f = @(z) z.^2.*(sqrt(P(i).r.^2 - (zCenter - z).^2));                % Integrand for I (equation (5)) figure (1)                                   
@@ -83,7 +90,8 @@ function solveUft(particleArray,Cd,k,mu,rhoAir,rhoSand,g,z0,ave)
                 end
                 
                 % Solve for threshold shear velocity by substituting of values into equation (8) 
-                P(i).uft(3) = sqrt((pi*(rhoSand - rhoAir)*g*((P(i).r*2/c)^3)*(k^2)*rG)/(12*rhoAir*rD*Cd*(I/(c^2))));
+                P(i).uft(3) = sqrt((pi*(rhoSand - rhoAir)*g*((Dp)^3)*(k^2)*rG/6 + ...
+                    Beta*((rC*Dp*Dc)/(2*(Dp + Dc))))/(((2*rhoAir*rD*Cd)/(k^2))*(I/(c^2))));
                 P(i).I(3) = I; % Save integral
                 
              % Modified linear wind Profile

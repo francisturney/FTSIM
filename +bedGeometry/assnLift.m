@@ -29,6 +29,8 @@ function assnLift(particleArray)
            
            % Assign Lift Point
            lift = liftParticle;
+           P(i).lift = lift;
+           
            theta = asin((P(lift).x - P(i).x)/(P(lift).r + P(i).r)); %Solving for angles between lever and forces 
            beta = acos((P(lift).x - P(i).x)/(P(lift).r + P(i).r));  
            if P(i).z < P(lift).z

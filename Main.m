@@ -3,6 +3,9 @@
 % particles most suseptable to entrainment, and computes the fluid threshold for thoses particle.
 % Statistics are gathered and presented at the end as well as a graphicall illustration of the bed.
 clear
+%parpool
+%pool = gcp;
+%addAttachedFiles(pool,{'/Users/francisturney/Documents/Research/AoleanStudies/FTSIM/+bedGeometry/initializeBed.m'})
 
 % Set Up
 import bedGeometry.*        % Package of functions controlling bed Geometry
@@ -27,52 +30,63 @@ global lBound range aveCFM
     g = 9.80665;                 % Acceleration due to gravity (m/s^2) by convention 
     z0 = 4/30;                   % Roughness Length D/30
     windProfile = 2;             % Switch for wind profile, 1 is logrithmic, 2 is linear, 3 is linear with wakes
+    Beta = 10^(-4);                % Coeficient for interparticle cohesion, 10^-4 from Shao and Lu, 2000, 0.0012 from Corn 1961
 
 % Declare / Simplify
-particleArray(3*nParticles) = particle;    % Create array of particles           
-totalParticleArray(3*nParticles*mRepetitions) = particle;     % Create concatenated array of particles over multiple model runs 
+%particleArray(3*nParticles) = particle;    % Create array of particles           
+%totalParticleArray(3*nParticles*mRepetitions) = particle;     % Create concatenated array of particles over multiple model runs 
+%totalParticleArray = [];
+particleArray(mRepetitions,3*nParticles) = particle;
 P = particleArray;
 
-% Model Runs
-for i=1:(mRepetitions)
-    for j=1:(3*nParticles)                      % Create particles
+%for i=1:mRepetitions                     % Create particles
+    for j=1:(3*nParticles) 
         particleArray(j) = particle;
     end
+%end
+
+
+% Model Runs
+parfor i=1:(mRepetitions)
+    import bedGeometry.*        % Package of functions controlling bed Geometry
+    import dataAnalysis.*       % Package of functions for data analysis and calculation
+    import particle
+    
 % debug code
 %  particleArray(1).x = 225;
 %  particleArray(2).x = 135;
 %  particleArray(3).x = 134;
     fprintf('On model run number %f\n',i);
     %try      
-        initializeBed(particleArray)       % Place Particles in Bed      
+        initializeBed(particleArray);       % Place Particles in Bed      
 
-        idTop(particleArray);                 % Identify Top Row of Particles
-
-        ave = averageHeight(particleArray);   % Calculate Average Height of Top Row
-
-        idCFM(particleArray, ave);            % Identify Canidates For Movement
-
-        assnPivot(particleArray);             % Assign Pivot Point and Moment Arms 
-            
-        assnLift(particleArray);              % Assign Lift Point (for area exposed to flow)
+%         idTop(particleArray);                 % Identify Top Row of Particles
+% 
+%         ave = averageHeight(particleArray);   % Calculate Average Height of Top Row
+% 
+%         idCFM(particleArray, ave);            % Identify Canidates For Movement
+% 
+%         assnLift(particleArray);              % Assign Lift Point (for area exposed to flow)
+%         
+%         assnPivot(particleArray);             % Assign Pivot Point and Moment Arms 
+%         
+%         % Calculate Fluid Threshold Shear Velocity For Each Particle
+%         solveUft(particleArray,Cd,k,mu,rhoAir,rhoSand,g,z0,ave,Beta); 
+%         
+%         NormalizeMomentArms(particleArray);  % Normalize Moment Arms
+% 
+%         P = gatherData(particleArray);       % Make Structure Array to easily view properties
         
-        % Calculate Fluid Threshold Shear Velocity For Each Particle
-        solveUft(particleArray,Cd,k,mu,rhoAir,rhoSand,g,z0,ave); 
-        
-        NormalizeMomentArms(particleArray);  % Normalize Moment Arms
-
-        P = gatherData(particleArray);       % Make Structure Array to easily view properties
-        
-        Print(particleArray, ave);           % Print Particle Bed
+        %Print(particleArray, ave);           % Print Particle Bed
 
         % Assimilate particle array into total particle/structure Array for data collection     
-            if i==1
-                totalParticleArray = particleArray;
-                Ptot = P;
-            else
-                totalParticleArray = [totalParticleArray,particleArray];
-                Ptot = [Ptot, P];
-            end
+%             if i==1
+%                 totalParticleArray = particleArray;
+%                 Ptot = P;
+%             else
+%                 totalParticleArray = [totalParticleArray,particleArray];
+%                 Ptot = [Ptot, P];
+%            end
 %     catch
 %         disp('Error')
 %         continue

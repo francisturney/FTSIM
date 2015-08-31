@@ -11,6 +11,7 @@ classdef particle < handle
         accel = [0,0,-9.8]      % 3D acceleration on a particle's center of mass
         dragMomentArm           % Moment arm that the drag force works on
         gravityMomentArm        % Moment arm the gravity works on
+        cohesiveMomentArm       % Moment arm cohesive forces work on
         uft                     % Fluid Threshold Shear Veloicty
         
         % Indicies of adjacent particles and orientation
@@ -20,8 +21,13 @@ classdef particle < handle
         landing = 0;            % Particle that the jth particel will land on
         prevTouch = 0;          % Pouching particle from previous loop  
         LR = 0;                 % Particle oriantation coeficint: (-1) for left (1) for right
+        pivot = 0;              % Index of pivot particle
         pivotPoint = [0,0]      % Location of pivot point (considering a left to right wind)
+        lift = 0;               % Index of lift particle
         liftPoint  = [0,0]      % Point opposite from the pivot point that the particle lifts off
+        theta = 0;              % Angle between gravity force and lever arm
+        beta = 0;               % Angle between drag force and lever arm
+        gamma = 0;              % Angel between cohesive force and lever arm
         dummyIndex = 0;         % Index of created dummy particle which mirrors the ith particle 
         dummyFriend = 0;        % Index of the particle that created the dummy particle
         ave = 0;                % Average height of the bed P(i) is sitting in
