@@ -40,12 +40,11 @@ classdef particle < handle
     end
     methods
         % Constructor
-        function particle = particle(radius, stdDeviation)                 % Constructor
-            global lBound range
-%             range = 100;
-%             lBound = 130;
- 
+        function particle = particle(lBound, range)                 % Constructor
             if  nargin == 0
+                lBound = 200;
+                range = 150;
+            end
                 m=4; % Mean for lognormal distribution 
                 s=3; % Standard deviation for normal lognormal distribution
                 mu = log(m^2/sqrt(s+m^2));
@@ -53,8 +52,8 @@ classdef particle < handle
                 particle.r = lognrnd(mu,sigma);                                                %  Particle radius  
                 particle.x = (lBound + particle.r) + (range - particle.r).*rand(1);                          % x coordinate of center                                         
                 particle.z = 200;                                           % z coordinate of center
-                particle.center = [particle.x,particle.z];   
-            end
+                particle.center = [particle.x,particle.z];  
+
         end
         function delete(particle)
         end

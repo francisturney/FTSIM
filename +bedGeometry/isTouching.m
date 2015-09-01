@@ -1,7 +1,5 @@
-function touching = isTouching(particleArray,i)
+function touching = isTouching(particleArray,i,nParticles,nDummies)
  import bedGeometry.*                                      % Package of functions controlling bed Geometry
-    global nParticles
-    global nDummies
     P = particleArray;
     touching = 0;
     for j=(nParticles + nDummies):-1:1                                          % Check if particles touching starting with last  
