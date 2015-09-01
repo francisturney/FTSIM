@@ -2,9 +2,9 @@
 % Description: Identify Top Layer of particles by droping dummy particles and assuming
 % the particles they collide with are on top.
 
-function idTop(particleArray,i,nParticles,nDummies,lBound,range)
-    P = particleArray(i,:);
+function P = idTop(P,nParticles,lBound,range)
     import bedGeometry.*                                                 % Package of functions controlling bed Geometry
+    nDummies = 2*nParticles;                            
     
     for i=1:nParticles + nDummies                                               % reset top
       P(i).isTop = false;

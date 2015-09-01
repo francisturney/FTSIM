@@ -4,18 +4,14 @@
 % Statistics are gathered and presented at the end as well as a graphicall illustration of the bed.
 clear
 %parpool
-%pool = gcp;
-%addAttachedFiles(pool,{'/Users/francisturney/Documents/Research/AoleanStudies/FTSIM/+bedGeometry/initializeBed.m'})
 
-% Set Up
+% PACKAGES AND CLASSES
 import bedGeometry.*        % Package of functions controlling bed Geometry
 import dataAnalysis.*       % Package of functions for data analysis and calculation
 import particle             % Class modeling individual sand particles as circles
 tic
-%global nParticles nDummies  % Number of particles per bed, Number of dummy particles per bed
-%global lBound range aveCFM
 
-% User Inputs
+% USER INPUTS
     nParticles = 175;            % Number of particles per bed formation
     lBound = 200;                % Lower bound
     range = 150;                 % Range of placement
@@ -32,43 +28,63 @@ tic
     windProfile = 2;             % Switch for wind profile, 1 is logrithmic, 2 is linear, 3 is linear with wakes
     Beta = 10^(-4);                % Coeficient for interparticle cohesion, 10^-4 from Shao and Lu, 2000, 0.0012 from Corn 1961
 
-%particleArray(mRepetitions,3*nParticles) = particle(lBound, range);
-
-particleArray(mRepetitions,3*nParticles) = particle;
-P = particleArray;
-
-%for i=1:mRepetitions                     % Create particles
-    for j=1:(3*nParticles) 
-        particleArray(j) = particle;
+    % DECLARE
+    % Particle Array
+    particleArray(mRepetitions,3*nParticles) = particle;
+    for i=1:mRepetitions                     % Create particles
+        for j=1:(3*nParticles) 
+            particleArray(i,j) = particle(lBound,range);
+        end
     end
-% Model Runs
-parfor i=1:(mRepetitions)                     
-    import bedGeometry.*        % Package of functions controlling bed Geometry
-    import dataAnalysis.*       % Package of functions for data analysis and calculation
-    import particle
+    
+    % Particle struct
+    P(mRepetitions,3*nParticles) =  struct('x',0,'z',0,'r',0,'center',[],'top',false,'CFM',false,'mD',0,'mG',0,'uft',0,...
+       'pivPoint',[],'liftPoint',0,'wake', 0, 'expArea',0,'destroyed',0,'ave',0, 'I', 0, 'lift', 0, 'pivot', 0);
+%     for i=1:mRepetitions                     % Create particles
+%         for j=1:(3*nParticles) 
+%             P(i,j) =  struct('x',0,'z',0,'r',0,'center',[],'top',false,'CFM',false,'mD',0,'mG',0,'uft',0,...
+%         'pivPoint',[],'liftPoint',0,'expArea',0,'destroyed',0,'ave',0, 'I', 0, 'lift', 0, 'pivot', 0);
+%         end
+%     end
 
+    
+% PARALLEL MODEL RUNS
+parfor i=1:(mRepetitions) 
+    import bedGeometry.*        % Referance to path for workers
+    import dataAnalysis.*       % Referance to path for workers
+    import particle             % Referance to class for workers
+    
     fprintf('On model run number %f\n',i);
     %try      
-        initializeBed(particleArray(i,:),i,nParticles, lBound, range);       % Place Particles in Bed      
+         % Place Particles in Bed
+         particleArray(i,:) = initializeBed(particleArray(i,:),nParticles, lBound, range);             
         
-%         idTop(particleArray);                 % Identify Top Row of Particles
-% 
-%         ave = averageHeight(particleArray);   % Calculate Average Height of Top Row
-% 
-%         idCFM(particleArray, ave);            % Identify Canidates For Movement
-% 
-%         assnLift(particleArray);              % Assign Lift Point (for area exposed to flow)
-%         
-%         assnPivot(particleArray);             % Assign Pivot Point and Moment Arms 
-%         
-%         % Calculate Fluid Threshold Shear Velocity For Each Particle
-%         solveUft(particleArray,Cd,k,mu,rhoAir,rhoSand,g,z0,ave,Beta); 
-%         
-%         NormalizeMomentArms(particleArray);  % Normalize Moment Arms
-% 
-%         P = gatherData(particleArray);       % Make Structure Array to easily view properties
+         % Identify Top Row of Particles
+         particleArray(i,:) = idTop(particleArray(i,:),nParticles,lBound,range);                 
+  
+         % Calculate Average Height of Top Row
+         ave = averageHeight(particleArray(i,:),nParticles);                             
+ 
+         % Identify Canidates For Movement
+         particleArray(i,:) = idCFM(particleArray(i,:), nParticles, ave);
+         
+         % Assign Lift Point (for area exposed to flow)
+         particleArray(i,:) = assnLift(particleArray(i,:),nParticles);  
+         
+         % Assign Pivot Point and Moment Arms           
+         particleArray(i,:) = assnPivot(particleArray(i,:),nParticles);
+         
+         % Calculate Fluid Threshold Shear Velocity For Each Particle
+         particleArray(i,:) = solveUft(particleArray(i,:),nParticles, Cd,k,mu,rhoAir,rhoSand,g,z0,ave,Beta); 
+         
+         % Normalize Moment Arms
+         particleArray(i,:) = NormalizeMomentArms(particleArray(i,:),nParticles);  
+ 
+         % Move Data into Structure Array to easily view properties
+         P(i,:) = gatherData(P(i,:),particleArray(i,:),nParticles);       
         
-        %Print(particleArray, ave);           % Print Particle Bed
+         % Print Particle Bed
+         %Print(particleArray(i,:), ave, nParticles, range, lBound);           
 
         % Assimilate particle array into total particle/structure Array for data collection     
 %             if i==1
@@ -83,6 +99,7 @@ parfor i=1:(mRepetitions)
 %         continue
 %     end
 end
+P(1) = P91,
 toc
 elapsedTime = toc/60;                                           %give run time in seconds and minutes
 fprintf('or %d minutes\n',elapsedTime)

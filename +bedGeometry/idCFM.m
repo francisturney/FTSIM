@@ -1,15 +1,13 @@
 % Function: idCFM (Canidates For Movement)
 % Description: If the jth particle is above the particles it touches than it is a canidate for movement
 
-function idCFM(particleArray,ave)  
-    global nParticles
-    global nDummies
-    global aveCFM
-    aveCFM = 0;
+function P = idCFM(particleArray,nParticles,ave)  
     import bedGeometry.*        % Package of functions controlling bed Geometry
     P = particleArray;          % Simplify notation
     l = 0;
-
+    aveCFM = 0;
+    nDummies = 2*nParticles;
+    
     for i=1:nParticles + nDummies                                               %reset top
         if P(i).isTop == true;
             P(i).isCFM = true;
@@ -35,5 +33,8 @@ function idCFM(particleArray,ave)
         end
     end
     aveCFM = aveCFM/l;
+    for i=1:nParticles + nDummies
+        P(i).aveCFM = aveCFM;
+    end
 end
     

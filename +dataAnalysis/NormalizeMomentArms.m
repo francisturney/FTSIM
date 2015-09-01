@@ -1,6 +1,5 @@
-function NormalizeMomentArms(particleArray)
-    global nParticles
-    global nDummies
+function particleArray = NormalizeMomentArms(particleArray, nParticles)
+   nDummies = 2*nParticles;
    for i=1:nParticles + nDummies
         if particleArray(i).isCFM
             particleArray(i).gravityMomentArm = particleArray(i).gravityMomentArm/particleArray(i).r;

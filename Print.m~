@@ -1,10 +1,12 @@
-function Print(P, nParticles, range, lBound)
-    ave = P(1).ave;
-    nDummies = 2*nParticles;
-    N = nParticles + nDummies;
+function Print(P,ave, nParticles, range, lBound)
+    global nParticles
+    global nDummies
+    global range lBound
+    
     clf
     figure(1)
     %ax = axes; hold on;
+    N = nParticles + nDummies;
     % Draw Particles in Red
     c = 1/10; % Conversion to mm
     for i=1:N                                                       %Print to screen

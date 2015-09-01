@@ -2,11 +2,9 @@
 % Description: Find the particle and point around which each top particle pivots, and then
 % assigns moment arms.
 
-function assnPivot(particleArray)  
-    global nParticles
-    global nDummies
-    import bedGeometry.*                                                                       % Package of functions controlling bed Geometry
-    P = particleArray;                                                                         % Simplify Notation
+function P = assnPivot(P, nParticles)  
+    import bedGeometry.*                                                                       % Package of functions controlling bed Geometry                                                                         % Simplify Notation
+    nDummies = 2*nParticles;
     
     for i=1:nParticles + nDummies
         if P(i).isCFM                                                                          % Find Pivot Points for Canidates For Movement only

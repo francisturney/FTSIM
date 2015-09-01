@@ -1,10 +1,9 @@
 % Function: averageHeight
 % Description: Finds the average height of the top row of particles
 
-function averageHeight = averageHeight(particleArray)
-    global nParticles
-    global nDummies
+function averageHeight = averageHeight(particleArray,nParticles)
     import bedGeometry.*        % Package of functions controlling bed Geometry
+    nDummies = 2*nParticles;
     
     averageHeight = 0;
     n = 0;
@@ -16,8 +15,8 @@ function averageHeight = averageHeight(particleArray)
     end
     averageHeight = averageHeight/n;
     for i=1:nParticles + nDummies
-        if particleArray(i).isTop
+        %if particleArray(i).isTop
             particleArray(i).ave = averageHeight;
-        end
+        %end
     end
 end

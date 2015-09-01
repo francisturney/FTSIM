@@ -1,8 +1,5 @@
-function P = gatherData(particleArray)
-    global nParticles
-    global nDummies
-    P = struct('x',0,'z',0,'r',0,'center',[],'top',false,'CFM',false,'mD',0,'mG',0,'uft',0,...
-        'pivPoint',[],'liftPoint',0,'expArea',0,'destroyed',0,'ave',0, 'I', 0, 'lift', 0, 'pivot', 0);
+function P = gatherData(P,particleArray,nParticles)
+    nDummies = 2*nParticles;
     for i=1:nParticles + nDummies
         P(i).x = particleArray(i).x;
         P(i).z = particleArray(i).z;

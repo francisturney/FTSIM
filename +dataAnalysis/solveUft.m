@@ -11,11 +11,10 @@
 % ave                          Average height of top layer of particles
 % Numerical Integration is done using Using Global Adaptive Quadrature and Default Error Tolerances
 
-function solveUft(particleArray,Cd,k,mu,rhoAir,rhoSand,g,z0,ave,Beta)
-        global nParticles
-        global nDummies
-        global aveCFM
-        P = particleArray;                     % Simplify Notation    
+function P = solveUft(particleArray,nParticles,Cd,k,mu,rhoAir,rhoSand,g,z0,Beta)
+        P = particleArray;                     % Simplify Notation 
+        nDummies = 2*nParticles;
+        ave = P(1).ave;
         
     for i=1:nParticles + nDummies
         if P(i).isCFM

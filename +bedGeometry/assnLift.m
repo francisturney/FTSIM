@@ -1,9 +1,8 @@
 % Function: assnAntiPivot
 % Description: Assign Lift Particles and Create Lift Point 
 
-function assnLift(particleArray)
-    global nParticles
-    global nDummies
+function P = assnLift(particleArray, nParticles)
+    nDummies = nParticles*2;
     import bedGeometry.*                                        % Package of functions controlling bed Geometry
     theta = 0;                                                  % theta is the angle between gravity force and lever arm
     beta = 0;                                                   % beta is the angle between drag force and lever arm 
