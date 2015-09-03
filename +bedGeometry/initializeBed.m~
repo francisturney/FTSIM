@@ -54,17 +54,17 @@ function P = initializeBed(P,nParticles, lBound, range)
                 [M,iTouch] = max(inLine);                               % find the highest particle in the path
                 P(i).touching = iTouch;                                 % Set P(i) to touch the max particle
             % Place From Drop
-            P(i).z = P(iTouch).z + sqrt((P(i).r + P(iTouch).r)^2 - (P(i).x - P(iTouch).x)^2); % Pathagorean theourm on touching triangle, we know everything except the z cordainate of P(i)
-            P(i).center = [P(i).x, P(i).z];                             % Update center
+            P(i).z = P(iTouch).z + sqrt((P(i).r + P(iTouch).r)^2 - (P(i).x - P(iTouch).x)^2); % Pathagorean theourm, we know P(i).
+            P(i).center = [P(i).x, P(i).z];
             
         % SETTELING ALGORITH
-        k = 0;                                          % Counts the number of iterations in placement
+        k = 0;
         l = 0;
         t = 0;
         oldTouch = 0;
-        while notWedged(P,i)                            % While not stuck between two particles
-            terminate = false;                          % Terminate breaks from loop later
-            k = k + 1;                                  
+        while notWedged(P,i)
+            terminate = false;
+            k = k + 1;
             if k > 1
                  P(i).touching = P(i).landing;
                  P(i).landing = 0;
