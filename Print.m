@@ -1,4 +1,4 @@
-function Print(P, nParticles, range, lBound)
+function Print(P, nParticles, range)
     ave = P(1).ave;
     nDummies = 2*nParticles;
     N = nParticles + nDummies;
@@ -38,7 +38,7 @@ function Print(P, nParticles, range, lBound)
         end
     end
     % Draw Average Height in Dashed Black Line
-    x = linspace(c*30,c*(lBound + 2*range),100);
+    x = linspace(c*30,c*(range + 2*range),100);
     z = linspace(c*ave,c*ave,100);
     plot(x,z,'--k','LineWidth', 1);
     
@@ -48,6 +48,9 @@ xlabel('distance(mm)','FontSize',20,...
        'FontName','Times');
 ylabel('height(mm)','FontSize',20,...
        'FontName','Times');
-    axis([20 35 3 15])
+    r = range/10 - 0.2*range/10;
+    a = ave/10 + 0.25*ave/10;
+    % Conditions for equal frame (solve for b) : (a + b) - (a - b) = 2r - r  
+    axis([r, 2*r, a - r/2, a + r/2])
     axis equal
 end

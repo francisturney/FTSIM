@@ -9,7 +9,11 @@ function P = gatherData(P,particleArray,nParticles)
         P(i).CFM = particleArray(i).isCFM;
         P(i).mD = particleArray(i).dragMomentArm;
         P(i).mG = particleArray(i).gravityMomentArm;
-        P(i).uft = particleArray(i).uft;
+        if P(i).CFM == true;
+            P(i).uft = struct('log', 0, 'linear', 0, 'logMod', 0, 'linMod', 0);
+            P(i).uft.log = particleArray(i).uft(1);  P(i).uft.linear = particleArray(i).uft(2);
+            P(i).uft.logMod = particleArray(i).uft(3);  P(i).uft.linMod = particleArray(i).uft(4);
+        end
         P(i).pivPoint = particleArray(i).pivotPoint;
         P(i).liftPoint = particleArray(i).liftPoint;
         P(i).wake = particleArray(i).wake;

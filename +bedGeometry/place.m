@@ -4,8 +4,9 @@
 % particles plus the radius of the jth particle
 
 function real = place(particleArray,j)  
-     try
+     %try
          import bedGeometry.*                  % Package of functions controlling bed Geometry
+         import particle
          real = true;
          P = particleArray;                         % Simplify notation for complex calculation
          jthParticle = particleArray(j);            % ...
@@ -38,7 +39,7 @@ function real = place(particleArray,j)
 %              fprintf('isTouching2(P,i) = ')
 %              isTouching2(P,i)
          end
-     catch
-         real = false;
-     end
+     %catch
+         %real = false;
+     %end
 end

@@ -40,19 +40,21 @@ classdef particle < handle
     end
     methods
         % Constructor
-        function particle = particle(lBound, range)                 % Constructor
-            if  nargin == 0
-                lBound = 200;
-                range = 150;
-            end
-                m=4; % Mean for lognormal distribution 
-                s=3; % Standard deviation for normal lognormal distribution
-                mu = log(m^2/sqrt(s+m^2));
-                sigma = sqrt(log(1+s/m^2));
+        function particle = particle(range,stdDev)                 % Constructor
+%             if  nargin == 0
+%                 lBound = 150
+%                 range = 150
+%             en
+            if(nargin > 0)
+                mean=4; % Mean for lognormal distribution 
+                %stdDev=3; % Standard deviation for normal lognormal distribution
+                mu = log(mean^2/sqrt(stdDev+mean^2));
+                sigma = sqrt(log(1+stdDev/mean^2));
                 particle.r = lognrnd(mu,sigma);                                                %  Particle radius  
-                particle.x = (lBound + particle.r) + (range - particle.r).*rand(1);                          % x coordinate of center                                         
-                particle.z = 200;                                           % z coordinate of center
+                particle.x = (range + particle.r) + (range - particle.r).*rand(1);                          % x coordinate of center                                         
+                particle.z = range*2;                                           % z coordinate of center
                 particle.center = [particle.x,particle.z];  
+            end
 
         end
         function delete(particle)
@@ -72,6 +74,9 @@ classdef particle < handle
 %                
 %            end
 %         end
+        function [] = move(particle, x, z) 
+            
+        end
     end
     methods (Static)
         function text = secondCommand()

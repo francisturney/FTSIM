@@ -1,4 +1,5 @@
 function notWedged = notWedged(P,i)
+import particle
     notWedged = true; 
     if (P(i).touching == 0) || (P(i).landing == 0);
         return
